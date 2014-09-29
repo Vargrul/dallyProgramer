@@ -1,10 +1,15 @@
-import java.sql.Struct;
 import java.util.Scanner;
 
 class eqParts{
-	int coef;
+	float coef;
 	String vari;
 	char ope;
+	
+	public eqParts(){
+		coef = 0;
+		vari = "";
+		ope = ' ';
+	}
 }
 
 public class main {
@@ -28,16 +33,15 @@ public class main {
 	public static float[] lineIntersect(String eq1, String eq2){
 		
 		eqParts[] eq1Phars = equationPhaser(eq1);
+		eqParts[] eq1Org = eq1Phars;
 		eqParts[] eq2Phars = equationPhaser(eq2);
 		
 		float[] out = new float[eq2Phars.length];
 		
-		String[] holder = new String[eq1Phars.length];
-		
 		int constLoc = 0;
 		
 		for(int i = 0 ; i < eq1Phars.length ; i++){
-			if(eq1Phars[i].vari.isEmpty()) constLoc = i;
+			if(eq1Phars[i].vari == null) constLoc = i;
 			for(int j = 0 ; j < eq2Phars.length ; j++){
 				if(eq1Phars[i].vari == eq2Phars[j].vari){
 					eq1Phars[i].coef -= eq2Phars[j].coef;
@@ -47,20 +51,24 @@ public class main {
 		
 		eq1Phars[constLoc].coef = eq1Phars[constLoc].coef * (-1);
 		
-		for(int i = 0 ; i < eq1Phars.length ; i++)		{
-			if(!eq1Phars[i].vari.isEmpty()){
+		for(int i = 0 ; i < eq1Phars.length ; i++){
+			if(eq1Phars[i].vari != null){
 				if(eq1Phars[i].vari == "x")eq1Phars[constLoc].coef = eq1Phars[constLoc].coef / eq1Phars[i].coef;
 			}
 		}
 		
 		out[0] = eq1Phars[constLoc].coef;
-		out[1] = 
+		out[1] = eq1Org[1].coef*out[0];
+		switch(eq1Org[0].ope){
+		case '+': out[1] = eq1Org[0].coef + out[1]; break;
+		case '-': out[1] = eq1Org[0].coef - out[1]; break;		
+		}
 		
 		return out;
 	}
 	
 	public static String[] compSplit(String comp){
-		String[] out = new String[2];
+		String[] out = new String[comp.length()];
 		Boolean found = false;
 		
 		for(int i = 0 ; i < comp.length() ; i++){
@@ -82,6 +90,9 @@ public class main {
 			if(eq.charAt(i) == '+' || eq.charAt(i) == '-') count++;
 		}
 		out = new eqParts[count+1];
+		for(int i = 0 ; i < out.length ; i++){
+			out[i] = new eqParts();
+		}
 		
 		count = 0;
 		String temp = new String();
@@ -91,9 +102,12 @@ public class main {
 				temp += eq.charAt(i);
 			}else{
 				out[i].ope = eq.charAt(i);
-				t = compSplit(temp);
-				out[i].coef = Integer.parseInt(t[0]);
-				out[i].vari = t[1];
+				if(temp.contains("x")){
+					t = compSplit(temp);
+					out[i].coef = Float.parseFloat(t[0]);
+					out[i].vari = t[1];
+				}else out[i].coef = Float.parseFloat(temp);
+				
 				count += 2;
 			}
 		}
