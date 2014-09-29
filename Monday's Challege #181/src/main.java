@@ -1,5 +1,11 @@
+import java.sql.Struct;
 import java.util.Scanner;
 
+class eqParts{
+	int coef;
+	String vari;
+	char ope;
+}
 
 public class main {
 
@@ -13,26 +19,42 @@ public class main {
 		System.out.print("Input secodn equation: ");
 		eq2 = in.nextLine();
 		
-		String[] eq1Elements = equationPhaser(eq1);
-		String[] eq2Elements = equationPhaser(eq2);
-		
-		float[] intersection = lineIntersect(eq1Elements, eq2Elements);
+		float[] intersection = lineIntersect(eq1, eq2);
 		
 		System.out.println("Intersectiosn at: x" + intersection[0] + " y" + intersection[1]);
 		in.close();
 	}
 	
-	public static float[] lineIntersect(String[] eq1, String[] eq2){
-		float[] out = new float[2];
+	public static float[] lineIntersect(String eq1, String eq2){
 		
-		String[] holder = new String[eq1.length];
+		eqParts[] eq1Phars = equationPhaser(eq1);
+		eqParts[] eq2Phars = equationPhaser(eq2);
 		
-		for(int i = 0 ; i < eq1.length ; i += 2){
-			String[] e1 = compSplit(eq1[i]);
-			String[] e2 = compSplit(eq2[i]);
-			
-			holder[i] = (e1[0] + e2[0]) + e1[1];
+		float[] out = new float[eq2Phars.length];
+		
+		String[] holder = new String[eq1Phars.length];
+		
+		int constLoc = 0;
+		
+		for(int i = 0 ; i < eq1Phars.length ; i++){
+			if(eq1Phars[i].vari.isEmpty()) constLoc = i;
+			for(int j = 0 ; j < eq2Phars.length ; j++){
+				if(eq1Phars[i].vari == eq2Phars[j].vari){
+					eq1Phars[i].coef -= eq2Phars[j].coef;
+				}
+			}
 		}
+		
+		eq1Phars[constLoc].coef = eq1Phars[constLoc].coef * (-1);
+		
+		for(int i = 0 ; i < eq1Phars.length ; i++)		{
+			if(!eq1Phars[i].vari.isEmpty()){
+				if(eq1Phars[i].vari == "x")eq1Phars[constLoc].coef = eq1Phars[constLoc].coef / eq1Phars[i].coef;
+			}
+		}
+		
+		out[0] = eq1Phars[constLoc].coef;
+		out[1] = 
 		
 		return out;
 	}
@@ -52,21 +74,26 @@ public class main {
 		return out;
 	}
 	
-	public static String[] equationPhaser(String eq){
-		String[] out;
+	public static eqParts[] equationPhaser(String eq){
+		eqParts[] out;
 		int count = 0;
 		
 		for(int i = 0 ; i < eq.length() ; i++){
 			if(eq.charAt(i) == '+' || eq.charAt(i) == '-') count++;
 		}
-		out = new String[count*2+1];
+		out = new eqParts[count+1];
 		
 		count = 0;
+		String temp = new String();
+		String[] t = new String[2];
 		for(int i = 0 ; i < eq.length() ; i++){
 			if(eq.charAt(i) != '+' && eq.charAt(i) != '-'){
-				out[count] += eq.charAt(i);
+				temp += eq.charAt(i);
 			}else{
-				out[count + 1] += eq.charAt(i);				
+				out[i].ope = eq.charAt(i);
+				t = compSplit(temp);
+				out[i].coef = Integer.parseInt(t[0]);
+				out[i].vari = t[1];
 				count += 2;
 			}
 		}
