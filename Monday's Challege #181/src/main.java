@@ -8,7 +8,10 @@ class eqParts{
 	public eqParts(){
 		coef = 0;
 		vari = "";
-		ope = ' ';
+	}
+	public void setAll(eqParts in){
+		this.coef = in.coef;
+		this.vari = in.vari;
 	}
 }
 
@@ -33,42 +36,48 @@ public class main {
 	public static float[] lineIntersect(String eq1, String eq2){
 		
 		eqParts[] eq1Phars = equationPhaser(eq1);
-		eqParts[] eq1Org = eq1Phars;
+		eqParts[] eq1Org = new eqParts[eq1Phars.length];
 		eqParts[] eq2Phars = equationPhaser(eq2);
+		
+		for(int i = 0 ; i < eq1Org.length ; i++){
+			eq1Org[i] = new eqParts();
+			eq1Org[i].setAll(eq1Phars[i]);
+		}
 		
 		float[] out = new float[eq2Phars.length];
 		
 		int constLoc = 0;
 		
 		for(int i = 0 ; i < eq1Phars.length ; i++){
-			if(eq1Phars[i].vari == null) constLoc = i;
+			if(eq1Phars[i].vari == "") constLoc = i;
 			for(int j = 0 ; j < eq2Phars.length ; j++){
-				if(eq1Phars[i].vari == eq2Phars[j].vari){
+				if(eq1Phars[i].vari.equals(eq2Phars[j].vari)){
 					eq1Phars[i].coef -= eq2Phars[j].coef;
 				}
 			}
 		}
 		
-		eq1Phars[constLoc].coef = eq1Phars[constLoc].coef * (-1);
+		eq1Phars[constLoc].coef = eq1Phars[constLoc].coef * (-1.0f);
 		
 		for(int i = 0 ; i < eq1Phars.length ; i++){
-			if(eq1Phars[i].vari != null){
-				if(eq1Phars[i].vari == "x")eq1Phars[constLoc].coef = eq1Phars[constLoc].coef / eq1Phars[i].coef;
+			if(eq1Phars[i].vari != ""){
+				if(eq1Phars[i].vari.indexOf('x') != -1)eq1Phars[constLoc].coef = eq1Phars[constLoc].coef / eq1Phars[i].coef;
 			}
 		}
 		
 		out[0] = eq1Phars[constLoc].coef;
 		out[1] = eq1Org[1].coef*out[0];
-		switch(eq1Org[0].ope){
-		case '+': out[1] = eq1Org[0].coef + out[1]; break;
-		case '-': out[1] = eq1Org[0].coef - out[1]; break;		
-		}
+		out[1] = eq1Org[0].coef + out[1];
 		
 		return out;
 	}
 	
 	public static String[] compSplit(String comp){
 		String[] out = new String[comp.length()];
+		for(int i = 0 ; i < out.length ; i++){
+			out[i] = "";
+		}
+		
 		Boolean found = false;
 		
 		for(int i = 0 ; i < comp.length() ; i++){
@@ -86,7 +95,7 @@ public class main {
 		eqParts[] out;
 		int count = 0;
 		
-		for(int i = 0 ; i < eq.length() ; i++){
+		for(int i = 1 ; i < eq.length() ; i++){
 			if(eq.charAt(i) == '+' || eq.charAt(i) == '-') count++;
 		}
 		out = new eqParts[count+1];
@@ -98,17 +107,21 @@ public class main {
 		String temp = new String();
 		String[] t = new String[2];
 		for(int i = 0 ; i < eq.length() ; i++){
-			if(eq.charAt(i) != '+' && eq.charAt(i) != '-'){
+			if(eq.charAt(i) != '+' && eq.charAt(i) != '-'  && i < eq.length()-1){
 				temp += eq.charAt(i);
 			}else{
-				out[i].ope = eq.charAt(i);
-				if(temp.contains("x")){
+				if( i == eq.length()-1) temp += eq.charAt(i);
+				if(temp.indexOf('x') != -1){
 					t = compSplit(temp);
-					out[i].coef = Float.parseFloat(t[0]);
-					out[i].vari = t[1];
-				}else out[i].coef = Float.parseFloat(temp);
+					out[count].coef = Float.parseFloat(t[0]);
+					out[count].vari = t[1];
+				}else{
+					out[count].coef = Float.parseFloat(temp); 
+				}
 				
-				count += 2;
+				count ++;
+				temp = "";
+				temp += eq.charAt(i);
 			}
 		}
 		return out;		
