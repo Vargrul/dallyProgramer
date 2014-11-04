@@ -1,14 +1,11 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Struct;
 
 
 public class main {
 
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
 		String filePath = "src/res/hallowData";
 		
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -33,7 +30,7 @@ public class main {
 			}
 		}
 		
-		System.out.println(bag.numCandy());
+		System.out.printf("%s", "There is " + bag.numCandy() + " pieces of candy in total.\n");
 		bag.printInv();
 		
 		reader.close();
