@@ -3,6 +3,14 @@ import java.util.ArrayList;
 
 public class candyBag {
 	public ArrayList<candy> candyList;
+	
+	public candyBag(){
+		candyList = new ArrayList();
+	}
+	public candyBag(String inS){
+		candyList = new ArrayList();
+		candyList.add(new candy(inS));
+	}
 
 	public int numCandy(){
 		int out = 0;
@@ -16,7 +24,7 @@ public class candyBag {
 
 	public void printInv(){
 		for (candy candy : candyList) {
-			System.out.println(candy.getCandyType() + ": Amount: " +candy.getAmount() + " This is %" + (candy.getAmount()/numCandy())*100 + " of the total.");
+			System.out.printf("%-20s %-15s %s%.1f%s", candy.getCandyType(), "Amount: " +candy.getAmount(), "This is ",  ((float)candy.getAmount()/(float)numCandy())*100.0f, "% of the total.\n");
 		}
 	}
 
