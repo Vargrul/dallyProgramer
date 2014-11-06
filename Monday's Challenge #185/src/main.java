@@ -24,7 +24,7 @@ public class main {
 		Collections.sort(twitterWordList, new Comparator<String>(){
 			@Override
 		    public int compare(String o1, String o2) {
-		        return Integer.valueOf(o1.length()).compareTo(o2.length());
+		        return Integer.valueOf(o2.length()).compareTo(o1.length());
 		    }
 		});
 		
@@ -33,7 +33,7 @@ public class main {
 		}
 		
 		for (String string : twitterWordList) {
-			System.out.printf("%" + twitterWordList.get(twitterWordList.size()-1).length() + "s  :  %s\n", string.replace("at", "@"), string);
+			System.out.printf("%" + twitterWordList.get(0).length() + "s  :  %s\n", string.replace("at", "@"), string);
 		}
 	}
 
